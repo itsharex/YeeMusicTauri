@@ -1,0 +1,133 @@
+import { useContainerWidth } from "@/hooks/useContainrWidth";
+import {
+  ArrowClockwise24Regular,
+  CaretLeft24Filled,
+  CaretRight24Filled,
+  ChevronRight24Regular,
+} from "@fluentui/react-icons";
+import React, { ReactNode, useState, useMemo } from "react";
+import { YeeButton } from "../yee-button";
+
+interface SectionProps {
+  title: string;
+  children: ReactNode;
+  seeMore?: boolean;
+  refresh?: boolean;
+  itemsPerPage?: number;
+  itemWidth?: number; // 卡片宽度，默认 128px (w-32)
+}
+
+const GAP = 32; // gap-8 = 32px
+const DEFAULT_ITEM_WIDTH = 128; // w-32 = 128px
+
+export function Section({
+  title,
+  children,
+  seeMore,
+  refresh,
+  itemsPerPage,
+  itemWidth = DEFAULT_ITEM_WIDTH,
+}: SectionProps) {
+  const [currentPage, setCurrentPage] = useState(0);
+  const { ref, width } = useContainerWidth();
+
+  // 计算每页显示的 items 数量
+  const itemPerView = useMemo(() => {
+    if (itemsPerPage) return itemsPerPage;
+    if (width === 0) return 4; // 默认值
+
+    // n * itemWidth + (n-1) * gap <= containerWidth
+    // n <= (containerWidth + gap) / (itemWidth + gap)
+    const count = Math.floor((width + GAP * 2) / (itemWidth + GAP));
+    return count > 0 ? count : 1;
+  }, [width, itemsPerPage, itemWidth]);
+
+  const items = React.Children.toArray(children);
+  const totalPages = Math.ceil(items.length / itemPerView);
+
+  // 确保 currentPage 不会越界
+  const safeCurrentPage = currentPage >= totalPages ? 0 : currentPage;
+
+  const handlePrev = () => {
+    setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
+  };
+
+  const handleNext = () => {
+    setCurrentPage((prev) => (prev + 1) % totalPages);
+  };
+
+  // 构建分页数据
+  const pages = useMemo(() => {
+    const result = [];
+    for (let i = 0; i < totalPages; i++) {
+      result.push(items.slice(i * itemPerView, (i + 1) * itemPerView));
+    }
+    return result;
+  }, [items, itemPerView, totalPages]);
+
+  const needPage = totalPages > 1;
+
+  return (
+    <section className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold">
+          <div
+            className={`flex items-center gap-2 group transform transition duration-300 ease-in-out  ${
+              seeMore
+                ? "cursor-pointer hover:bg-foreground/5 rounded-md hover:translate-x-2 px-2 py-1 -ml-2 -mt-1"
+                : ""
+            }`}
+          >
+            {title}
+            {seeMore && (
+              <ChevronRight24Regular className="size-5 text-foreground/60 group-hover:mr-1" />
+            )}
+          </div>
+        </h2>
+
+        <div className="flex gap-2 text-black/60 items-center">
+          {needPage && (
+            <>
+              <YeeButton
+                variant="ghost"
+                icon={<CaretLeft24Filled className="size-3" />}
+                className="size-6 rounded-full bg-card border! border-border! text-muted-foreground hover:text-muted-foreground"
+                onClick={handlePrev}
+              />
+              <YeeButton
+                variant="ghost"
+                icon={<CaretRight24Filled className="size-3" />}
+                className="size-6 rounded-full bg-card border! border-border! text-muted-foreground hover:text-muted-foreground"
+                onClick={handleNext}
+              />
+            </>
+          )}
+          {refresh && (
+            <ArrowClockwise24Regular className="size-5 hover:text-gray-700 cursor-pointer" />
+          )}
+        </div>
+      </div>
+
+      <div className="w-full relative" ref={ref}>
+        <div className="overflow-hidden">
+          <div
+            className="flex transition-transform duration-500 ease-in-out"
+            style={{
+              transform: `translateX(-${safeCurrentPage * 100}%)`,
+            }}
+          >
+            {pages.map((pageItems, idx) => (
+              <div
+                key={idx}
+                className="flex gap-8 shrink-0"
+                style={{ width: "100%" }}
+              >
+                {pageItems}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

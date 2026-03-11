@@ -29,7 +29,7 @@ import { PlayerBarSlider } from "./playerbar-slider";
 export function PlayerBar() {
   return (
     <div
-      className="w-full h-20 grid grid-cols-3 relative bg-card/80"
+      className="w-full h-20 grid grid-cols-3 relative bg-card/60"
       onContextMenu={(e) => e.preventDefault()}
     >
       <LeftButtonRegion />

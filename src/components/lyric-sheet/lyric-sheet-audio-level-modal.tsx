@@ -10,20 +10,20 @@ import { cn, formatFileSize } from "@/lib/utils";
 import { MusicLevelPopover } from "../music-level-popover";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-export function MusicLevelModal() {
+export function LyricSheetAudioLevelModel({
+  setIsLyricSheetOpen,
+}: {
+  setIsLyricSheetOpen: (isOpen: boolean) => void;
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { currentMusicLevel, currentSongMusicDetail, setCurrentMusicLevel } =
-    usePlayerStore();
-
-  function handleSetMusicLevel(level: string) {
-    if (level in SONG_QUALITY) {
-      setCurrentMusicLevel(level as keyof typeof SONG_QUALITY);
-    }
-  }
+  const { currentMusicLevel, currentSongMusicDetail } = usePlayerStore();
 
   const isUnlock = currentMusicLevel === "unlock";
+
+  const navigate = useNavigate();
 
   return (
     <YeeDialog
@@ -38,8 +38,11 @@ export function MusicLevelModal() {
       footer={
         <div className="w-full flex gap-2">
           <YeeDialogPrimaryButton
-            onClick={() => handleSetMusicLevel(currentMusicLevel)}
             variant="dark"
+            onClick={() => {
+              navigate("/setting");
+              setIsLyricSheetOpen(false);
+            }}
           >
             详细设置
           </YeeDialogPrimaryButton>

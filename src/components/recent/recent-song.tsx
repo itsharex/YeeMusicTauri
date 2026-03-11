@@ -14,37 +14,25 @@ export function RecentSong() {
   );
 
   return (
-    // <div className="w-full h-full">
-    //   {isLoading && <Loading />}
-    //   <div className="flex-1 flex flex-col gap-4">
-    //     {data?.map((song, index) => {
-    //       return (
-    //         <SongListItem
-    //           key={song.data.id}
-    //           song={song.data}
-    //           index={index}
-    //           showCover={true}
-    //         />
-    //       );
-    //     })}
-    //   </div>
-    // </div>
-    <Virtuoso
-      useWindowScroll
-      customScrollParent={
-        document.getElementById("main-scroll-container") as HTMLElement
-      }
-      data={data}
-      itemContent={(index, song) => (
-        <div className="pb-4">
-          <SongListItem
-            song={song.data}
-            index={index}
-            showCover={true}
-            showAlbum={true}
-          />
-        </div>
-      )}
-    />
+    <div className="w-full h-full">
+      {isLoading && <Loading />}
+      <Virtuoso
+        useWindowScroll
+        customScrollParent={
+          document.getElementById("main-scroll-container") as HTMLElement
+        }
+        data={data}
+        itemContent={(index, song) => (
+          <div className="pb-4">
+            <SongListItem
+              song={song.data}
+              index={index}
+              showCover={true}
+              showAlbum={true}
+            />
+          </div>
+        )}
+      />
+    </div>
   );
 }

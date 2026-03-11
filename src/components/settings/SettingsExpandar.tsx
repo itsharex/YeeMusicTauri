@@ -91,7 +91,7 @@ export function SettingsExpandarDetail({
   children,
 }: SettingsExpandarDetailProps) {
   return (
-    <div className="w-full bg-card border border-t-0 p-4 flex items-center justify-between last:rounded-b-sm">
+    <div className="w-full bg-card/40 border border-t-0 p-4 flex items-center justify-between last:rounded-b-sm">
       <p className="text-sm text-card-foreground">{desc}</p>
       {trailing}
       {children}

@@ -306,15 +306,6 @@ export function AppSidebar() {
                     </DropdownMenuItem>
                   )}
 
-                  <DropdownMenuItem
-                    onClick={() => {
-                      navigate("/setting");
-                    }}
-                  >
-                    <Settings24Regular />
-                    设置
-                  </DropdownMenuItem>
-
                   {!!user && (
                     <>
                       <DropdownMenuItem
@@ -339,6 +330,15 @@ export function AppSidebar() {
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={pathName === "/setting"}>
+                <Link to={"/setting"}>
+                  <Settings24Regular />
+                  <span>设置</span>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>

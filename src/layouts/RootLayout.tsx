@@ -30,10 +30,11 @@ export default function RootLayout() {
               <AppSidebar />
             </Suspense>
 
-            <div className="relative flex flex-col flex-1 overflow-hidden bg-card/60 border border-border rounded-tl-lg border-b-0">
+            <div className="relative flex flex-col flex-1 overflow-hidden bg-card/40 border border-border rounded-tl-lg border-b-0">
               <main
                 id="main-scroll-container"
                 className="flex-1 w-full h-full overflow-y-auto"
+                onDragStart={(e) => e.preventDefault()}
               >
                 <div className="W-full flex flex-col">
                   <Outlet />

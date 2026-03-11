@@ -1,7 +1,6 @@
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { SONG_QUALITY } from "@/lib/constants/song";
 import { cn, formatFileSize } from "@/lib/utils";
-import { Checkmark24Filled } from "@fluentui/react-icons";
 import { usePlayerStore } from "@/lib/store/playerStore";
 import { QualityWithKey } from "@/lib/types/song";
 import { ReactNode } from "react";
@@ -11,7 +10,7 @@ const popoverVarients = cva("w-64 rounded-lg", {
   variants: {
     variant: {
       dark: "bg-black text-white border-white/20",
-      light: "bg-white/90 text-black backdrop-blur-md",
+      light: "bg-card/90 text-foreground backdrop-blur-md",
     },
   },
 });
@@ -19,7 +18,7 @@ const popoverVarients = cva("w-64 rounded-lg", {
 export function MusicLevelPopover({
   open,
   onOpenChange,
-  variant,
+  variant = "light",
   side = "top",
   sideOffset = 48,
   contentClassName,
@@ -54,7 +53,7 @@ export function MusicLevelPopover({
         ) : (
           <span
             className={cn(
-              "cursor-pointer bg-card hover:bg-card/50 rounded-full px-2 py-1 text-sm font-bold text-foreground/60",
+              "cursor-pointer bg-card hover:bg-card/50 rounded-md px-2 py-1 text-xs font-bold text-foreground/60 border",
               className,
             )}
           >
@@ -109,8 +108,9 @@ export function AudioLevelItem({
   return (
     <div
       className={cn(
-        "flex justify-between items-center  px-4 py-2 rounded-md cursor-pointer",
-        variant === "light" ? "hover:bg-black/5" : "hover:bg-white/20",
+        "relative flex justify-between items-center  px-4 py-2 rounded-md cursor-pointer",
+        variant === "light" ? "hover:bg-foreground/5" : "hover:bg-white/10",
+        selected && (variant === "light" ? "bg-foreground/5" : "bg-white/10"),
       )}
       onClick={() => onClick(level)}
     >
@@ -119,12 +119,14 @@ export function AudioLevelItem({
       <div className="flex gap-2 items-center">
         <span
           className={cn(
-            variant === "light" ? "text-black/60" : "text-white/60",
+            variant === "light" ? "text-foreground/60" : "text-white/60",
           )}
         >
           {size}
         </span>
-        {selected && <Checkmark24Filled className="size-4" />}
+        {selected && (
+          <span className="w-1 h-4 bg-primary absolute left-0 -translate-1/2 top-1/2 rounded-full"></span>
+        )}
       </div>
     </div>
   );

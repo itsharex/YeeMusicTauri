@@ -14,13 +14,24 @@ import {
   ComboboxList,
 } from "@/components/ui/combobox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Color24Regular, Window24Regular } from "@fluentui/react-icons";
+import { SONG_QUALITY } from "@/lib/constants/song";
+import {
+  Color24Regular,
+  Speaker224Regular,
+  Window24Regular,
+} from "@fluentui/react-icons";
 import { IconBrandGithub } from "@tabler/icons-react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 
 export default function SettingPage() {
   return (
     <div className="w-full h-full px-8 py-8 flex flex-col gap-8">
+      <div className="w-full h-full flex flex-col gap-4">
+        <h2 className="text-sm font-bold">音频</h2>
+
+        <AudioSettingCard />
+      </div>
+
       <div className="w-full h-full flex flex-col gap-4">
         <h2 className="text-sm font-bold">个性化</h2>
 
@@ -60,6 +71,35 @@ export default function SettingPage() {
           </div>
         </SettingsExpandar>
       </div>
+    </div>
+  );
+}
+
+function AudioSettingCard() {
+  return (
+    <div className="flex flex-col gap-1">
+      <SettingsExpandar
+        title="音频质量"
+        subtitle="选择优先播放的音质"
+        icon={<Speaker224Regular />}
+        trailing={
+          <Combobox value={"无损"}>
+            <ComboboxInput className="w-32 select-none! bg-card" />
+            <ComboboxContent className="p-2 ring-0">
+              <ComboboxList>
+                {Object.keys(SONG_QUALITY).map((k) => (
+                  <ComboboxItem
+                    key={k}
+                    value={SONG_QUALITY[k as keyof typeof SONG_QUALITY].desc}
+                  >
+                    {SONG_QUALITY[k as keyof typeof SONG_QUALITY].desc}
+                  </ComboboxItem>
+                ))}
+              </ComboboxList>
+            </ComboboxContent>
+          </Combobox>
+        }
+      ></SettingsExpandar>
     </div>
   );
 }
@@ -116,7 +156,7 @@ function ThemeSettingCard() {
               value={material}
               onValueChange={(val) => setMaterial(val as WindowMaterial)}
             >
-              <ComboboxInput className="w-24 select-none! bg-card" />
+              <ComboboxInput className="w-24 select-none! " />
               <ComboboxContent className="p-2 ring-0">
                 <ComboboxList>
                   <ComboboxItem key="acrylic" value="Acrylic">

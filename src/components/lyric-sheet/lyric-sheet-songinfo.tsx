@@ -19,7 +19,7 @@ import { likeSong } from "@/lib/services/user";
 import { toast } from "sonner";
 import { YeeSlider } from "../yee-slider";
 import { GetThumbnail, cn, formatDuration } from "@/lib/utils";
-import { MusicLevelModal } from "../modal/music-level-modal";
+import { LyricSheetAudioLevelModel } from "./lyric-sheet-audio-level-modal";
 import { SFIcon } from "@bradleyhodges/sfsymbols-react";
 import { sfQuoteBubble, sfQuoteBubbleFill } from "@bradleyhodges/sfsymbols";
 import { Link } from "react-router-dom";
@@ -52,7 +52,7 @@ export function LyricSheetSonginfo({
             onLyricOpenChangeAction={onLyricOpenChangeAction}
           />
 
-          <LyricSheetSonginfoDuration />
+          <LyricSheetSonginfoDuration setIsOpen={setIsOpen} />
 
           <PlaybackControls />
 
@@ -177,7 +177,11 @@ function SongMeta({
   );
 }
 
-function LyricSheetSonginfoDuration() {
+function LyricSheetSonginfoDuration({
+  setIsOpen,
+}: {
+  setIsOpen: (isOpen: boolean) => void;
+}) {
   const currentTime = usePlayerStore((s) => s.currentTime);
   const progress = usePlayerStore((s) => s.progress);
   const seek = usePlayerStore((s) => s.seek);
@@ -202,7 +206,7 @@ function LyricSheetSonginfoDuration() {
         </span>
 
         <div className="flex justify-center">
-          <MusicLevelModal />
+          <LyricSheetAudioLevelModel setIsLyricSheetOpen={setIsOpen} />
         </div>
 
         <span className="text-white/50 font-light drop-shadow-md text-right">

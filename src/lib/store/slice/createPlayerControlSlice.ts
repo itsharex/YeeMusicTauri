@@ -56,7 +56,7 @@ export const createPlayerControlSlice: StateCreator<
 
       set({ currentSong: song, currentIndexInPlaylist: targetIndex });
 
-      set({ isLoadingMusic: true });
+      set({ isLoadingMusic: true, currentTime: 0, progress: 0 });
 
       // 先检查歌曲是否可用
       let url;

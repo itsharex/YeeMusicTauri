@@ -61,10 +61,17 @@ function ComboboxInput({
   showClear?: boolean;
 }) {
   return (
-    <InputGroup className={cn("w-auto", className)}>
+    <InputGroup
+      className={cn(
+        "w-auto bg-card focus-within:ring-0! focus-within:border-border!",
+        className,
+      )}
+    >
       <ComboboxPrimitive.Input
         render={<InputGroupInput disabled={disabled} />}
         {...props}
+        readOnly
+        className="cursor-default caret-transparent select-none"
       />
       <InputGroupAddon align="inline-end">
         {showTrigger && (

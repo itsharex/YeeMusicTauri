@@ -30,6 +30,7 @@ export function SongListItem({
         "transition-colors duration-300",
       )}
       onDoubleClick={() => playSong(song)}
+      onDragStart={(e) => e.preventDefault()}
     >
       <div className={`grid ${gridTemplate} items-center px-4 py-3 group`}>
         <div className="flex gap-4 items-center ">

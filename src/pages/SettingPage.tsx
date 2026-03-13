@@ -6,6 +6,7 @@ import { Theme, useTheme } from "@/components/providers/theme-provider";
 import SettingsExpandar, {
   SettingsExpandarDetail,
 } from "@/components/settings/SettingsExpandar";
+import { Button } from "@/components/ui/button";
 import {
   Combobox,
   ComboboxContent,
@@ -16,12 +17,19 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { SONG_QUALITY } from "@/lib/constants/song";
 import {
+  CheckmarkStarburst24Regular,
   Color24Regular,
   Speaker224Regular,
   Window24Regular,
 } from "@fluentui/react-icons";
 import { IconBrandGithub } from "@tabler/icons-react";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { check } from "@tauri-apps/plugin-updater";
+import { relaunch } from "@tauri-apps/plugin-process";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 
 export default function SettingPage() {
   return (
@@ -40,36 +48,35 @@ export default function SettingPage() {
 
       <div className="w-full h-full flex flex-col gap-4">
         <h2 className="text-sm font-bold">关于</h2>
-
-        <SettingsExpandar
-          title="Yee Music"
-          subtitle="更好用的网易云音乐客户端"
-          icon={
-            <img
-              src={"/icons/logo.png"}
-              className="object-cover"
-              alt="Yee Music"
-            />
-          }
-          trailing={
-            <span className="text-muted-foreground text-sm">Beta 0.1.6</span>
-          }
-        >
-          <div className="flex flex-col gap-0">
-            <SettingsExpandarDetail desc="作者：isen" />
-            <SettingsExpandarDetail
-              desc="问题反馈"
-              trailing={
-                <IconBrandGithub
-                  className="size-4 hover:text-muted-foreground text-foreground cursor-pointer"
-                  onClick={async () =>
-                    await openUrl("https://github.com/1sen3/YeeMusicTauri")
-                  }
-                />
-              }
-            />
-          </div>
-        </SettingsExpandar>
+        <div className="flex flex-col gap-2">
+          <SettingsExpandar
+            title="Yee Music"
+            subtitle="更好用的网易云音乐客户端"
+            icon={
+              <img
+                src={"/icons/logo.png"}
+                className="object-cover"
+                alt="Yee Music"
+              />
+            }
+          >
+            <div className="flex flex-col gap-0">
+              <SettingsExpandarDetail desc="作者：isen" />
+              <SettingsExpandarDetail
+                desc="问题反馈"
+                trailing={
+                  <IconBrandGithub
+                    className="size-4 hover:text-muted-foreground text-foreground cursor-pointer"
+                    onClick={async () =>
+                      await openUrl("https://github.com/1sen3/YeeMusicTauri")
+                    }
+                  />
+                }
+              />
+            </div>
+          </SettingsExpandar>
+          <UpdateSettingCard />
+        </div>
       </div>
     </div>
   );
@@ -171,6 +178,76 @@ function ThemeSettingCard() {
                 </ComboboxList>
               </ComboboxContent>
             </Combobox>
+          </div>
+        }
+      ></SettingsExpandar>
+    </div>
+  );
+}
+
+function UpdateSettingCard() {
+  const [checking, setChecking] = useState(false);
+
+  async function checkForUpdates() {
+    const update = await check();
+    if (update) {
+      console.log(`found update ${update.version}`);
+
+      let downloaded = 0;
+      let contentLength = 0;
+
+      await update.downloadAndInstall((event) => {
+        switch (event.event) {
+          case "Started":
+            contentLength = event.data.contentLength || 0;
+            console.log(`started downloading ${contentLength} bytes`);
+            break;
+          case "Progress":
+            downloaded += event.data.chunkLength || 0;
+            console.log(`downloaded ${downloaded} from ${contentLength}`);
+            break;
+          case "Finished":
+            console.log("download finished");
+            break;
+        }
+      });
+
+      console.log("update installed");
+      await relaunch();
+    }
+  }
+
+  async function handleCheck() {
+    setChecking(true);
+    try {
+      await checkForUpdates();
+    } catch (e) {
+      toast.error("检查更新失败，请重试...");
+    } finally {
+      setChecking(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      <SettingsExpandar
+        title="Beta 0.1.6"
+        subtitle="上次更新：2026-03-14"
+        icon={<CheckmarkStarburst24Regular />}
+        trailing={
+          <div className="flex justify-end">
+            <Button
+              className={cn(
+                "bg-card text-foreground border-border hover:bg-foreground/2",
+                checking && "cursor-not-allowed bg-muted",
+              )}
+              onClick={handleCheck}
+            >
+              <div className="flex gap-2">
+                {checking && <Spinner />}
+                <span>{checking ? "检查中..." : "检查更新"}</span>
+              </div>
+            </Button>
           </div>
         }
       ></SettingsExpandar>

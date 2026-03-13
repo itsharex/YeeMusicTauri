@@ -1,0 +1,115 @@
+name: Release
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build and Release
+        id: tauri_build
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PASSWORD }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "Yee Music v__VERSION__"
+          releaseBody: "See the assets below to download the latest version."
+          releaseDraft: false
+          prerelease: false
+
+      - name: Update updater metadata
+        # 仅在 windows 构建成功后尝试更新 metadata
+        if: success() && matrix.platform == 'windows-latest'
+        run: |
+          # 配置 git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 临时保存最新的构建版本和签名信息
+          # Tauri 2.0 会在 target/release/bundle/msi/ 目录下生成 .msi.zip 和 .msi.zip.sig
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}" # 去掉 v 前缀
+
+          # 切换到 updater 分支（如果不存在则创建）
+          git fetch origin updater || true
+          git checkout updater || git checkout --orphan updater
+          git pull origin updater || true
+          git rm -rf . || true
+
+          # 生成 latest.json
+          # 注意：URL 指向的是刚发布的 Release 资源
+          # 你需要根据你的仓库名调整 URL 模板
+          REPO_OWNER="${{ github.repository_owner }}"
+          REPO_NAME="${{ github.event.repository.name }}"
+          TAG="${{ github.ref_name }}"
+
+          # 这里通过一个简单的脚本提取本地生成的签名并构建 JSON
+          node -e "
+            const fs = require('fs');
+            const path = require('path');
+            
+            // 查找签名文件 (Tauri 2 默认在 bundle 下)
+            // 注意：路径可能需要根据你实际打包结果微调
+            const searchDir = 'src-tauri/target/release/bundle/msi';
+            if (!fs.existsSync(searchDir)) {
+               console.log('Search directory not found: ' + searchDir);
+               process.exit(0);
+            }
+            const files = fs.readdirSync(searchDir);
+            const signatureFile = files.find(f => f.endsWith('.sig'));
+            const assetFile = signatureFile.replace('.sig', '');
+            
+            const signature = fs.readFileSync(path.join(searchDir, signatureFile), 'utf-8').trim();
+            const downloadUrl = 'https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/download/${TAG}/' + assetFile;
+            
+            const latest = {
+              version: '${TAG}',
+              notes: 'Update released on ' + new Date().toISOString(),
+              pub_date: new Date().toISOString(),
+              platforms: {
+                'windows-x86_64': {
+                  signature: signature,
+                  url: downloadUrl
+                }
+              }
+            };
+            
+            fs.writeFileSync('latest.json', JSON.stringify(latest, null, 2));
+          "
+
+          # 提交并推送
+          if [ -f "latest.json" ]; then
+            git add latest.json
+            git commit -m "update updater metadata for ${TAG}"
+            git push origin updater
+          fi

@@ -41,7 +41,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDgzMkMzMzczMzM0OTQ2QjUKUldTMVJra3pjek1zZzBvMW4zL0RFYjd4aWxocUdYekNtTHQrNU5FZzRhb3VwVUVNU0FyeWIzTWsK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEU5MTJFQjhERTYwNkZENDEKUldSQi9RYm1qZXNTNlVzUHBidEhhcDhuS2xFNExocTk0Y0Fldk1lb1RlaGlQNHB0S2VxVnVsaUcK",
       "active": true,
       "endpoints": [
         "https://raw.githubusercontent.com/1sen3/YeeMusicTauri/updater/latest.json"

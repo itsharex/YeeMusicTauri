@@ -41,21 +41,22 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PASSWORD }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_PASSWORD }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "Yee Music v__VERSION__"
           releaseBody: "See the assets below to download the latest version."
           releaseDraft: false
           prerelease: false
+          args: --verbose
 
       - name: List build artifacts
         if: success() && matrix.platform == 'windows-latest'
         shell: bash
         run: |
-          echo "Listing files in src-tauri/target/release/bundle:"
-          ls -R src-tauri/target/release/bundle || echo "Directory not found"
+          echo "Listing all files in src-tauri (debug):"
+          find src-tauri -maxdepth 5 -not -path '*/.*'
 
       - name: Update updater metadata
         if: success() && matrix.platform == 'windows-latest'
@@ -70,8 +71,7 @@ jobs:
           REPO_OWNER="${{ github.repository_owner }}"
           REPO_NAME="${{ github.event.repository.name }}"
 
-          # 1. 递归搜索 .sig 文件并构建 metadata
-          # 使用 node 脚本来处理，因为它比 bash 更容易处理 JSON 和文件搜索
+          # 1. 在整个 src-tauri 目录下递归搜索 .sig 文件
           node -e "
             const fs = require('fs');
             const path = require('path');
@@ -81,27 +81,31 @@ jobs:
               const files = fs.readdirSync(dir);
               for (const file of files) {
                 const fullPath = path.join(dir, file);
-                const stats = fs.statSync(fullPath);
-                if (stats.isDirectory()) {
-                  const found = findFile(fullPath, predicate);
-                  if (found) return found;
-                } else if (predicate(file)) {
-                  return fullPath;
-                }
+                try {
+                  const stats = fs.statSync(fullPath);
+                  if (stats.isDirectory()) {
+                    const found = findFile(fullPath, predicate);
+                    if (found) return found;
+                  } else if (predicate(file)) {
+                    return fullPath;
+                  }
+                } catch (e) {}
               }
               return null;
             }
 
-            const searchRoot = 'src-tauri/target/release/bundle';
+            console.log('正在搜索签名文件 (.sig)...');
+            const searchRoot = 'src-tauri';
             const sigPath = findFile(searchRoot, f => f.endsWith('.sig'));
 
             if (!sigPath) {
-              console.error('错误: 在 ' + searchRoot + ' 中找不到 .sig 签名文件。');
-              console.error('请确保 TAURI_PRIVATE_KEY 和 TAURI_PASSWORD 已正确设置。');
+              console.error('错误: 在 ' + searchRoot + ' 目录下找不到任何 .sig 签名文件。');
+              console.error('这通常意味着 Tauri 构建过程中没有进行签名。');
+              console.error('请检查 GitHub Secrets 中的 TAURI_PRIVATE_KEY 是否正确（应该是以 untrusted comment 开头的文本，而不是 Base64 字符串）。');
               process.exit(1);
             }
 
-            console.log('找到签名文件:', sigPath);
+            console.log('成功找到签名文件:', sigPath);
             const signature = fs.readFileSync(sigPath, 'utf-8').trim();
             const assetFile = path.basename(sigPath).replace('.sig', '');
             const downloadUrl = 'https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/download/${TAG}/' + assetFile;
@@ -115,20 +119,15 @@ jobs:
               }
             };
 
-            // 临时保存，稍后切分支后再写回
             fs.writeFileSync('latest_temp.json', JSON.stringify(latest, null, 2));
           "
 
-          # 2. 干净地切换到 updater 分支
-          # 我们使用一个新的克隆或利用现有的 worktree 来避免在主分支留下残余
           git fetch origin updater || git checkout --orphan updater
           git checkout updater
           git pull origin updater || true
 
-          # 只保留最新生成的 metadata
           mv latest_temp.json latest.json
-          
-          # 提交并推送
+
           git add latest.json
           git commit -m "update updater metadata for ${TAG}" || echo "No changes to commit"
           git push origin updater

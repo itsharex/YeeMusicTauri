@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { SharedPlayerState } from "../types/player";
 import { persist, subscribeWithSelector } from "zustand/middleware";
-import { createPlaylistSlice } from "./slice/createPlaylistSlice";
-import { createPlayerControlSlice } from "./slice/createPlayerControlSlice";
-import { createSongInfoSlice } from "./slice/createSongInfoSlice";
+import { createPlaylistSlice } from "./playerStoreSlice/createPlaylistSlice";
+import { createPlayerControlSlice } from "./playerStoreSlice/createPlayerControlSlice";
+import { createSongInfoSlice } from "./playerStoreSlice/createSongInfoSlice";
 
 export const usePlayerStore = create<SharedPlayerState>()(
   persist(

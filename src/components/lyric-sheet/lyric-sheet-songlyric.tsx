@@ -241,7 +241,10 @@ export function LyricSheetSongLyric({ className }: { className?: string }) {
           WebkitMaskImage: MASK_IMAGE,
         }}
       >
-        <motion.div className="w-full flex flex-col items-start ">
+        <motion.div
+          className="w-full flex flex-col items-start "
+          style={{ fontFamily: "var(--app-lyric-font-family, inherit)" }}
+        >
           {lyric?.map((lyricLine, idx) => {
             const distance = Math.abs(idx - currentIndex);
             const scrollDelay = distance * LYRIC_CROLL_DELAY;
@@ -277,7 +280,7 @@ export function LyricSheetSongLyric({ className }: { className?: string }) {
           })}
           <div className="w-full h-[50vh] shrink-0 pointer-events-none" />
         </motion.div>
-      </div>{" "}
+      </div>
       <div className="flex items-center gap-4 absolute bottom-0 right-0">
         {transLyric.length > 0 && (
           <YeeButton
@@ -509,7 +512,7 @@ export const SongLyricLine = forwardRef<
           <motion.span
             initial={false}
             className={cn(
-              "w-full text-3xl mix-blend-plus-lighter drop-shadow-md inline-block font-medium tracking-tight",
+              "w-full text-3xl mix-blend-plus-lighter inline-block font-medium tracking-tight",
             )}
             animate={{
               color: `rgba(255, 255, 255, 0.8)`,
@@ -518,9 +521,6 @@ export const SongLyricLine = forwardRef<
               transformOrigin: "left center",
               y: isActive ? -4 : 0,
               willChange: "transform",
-              textShadow: isActive
-                ? "0 0 10px rgba(255, 255, 255, 0.4)"
-                : "none",
             }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
           >
@@ -533,7 +533,7 @@ export const SongLyricLine = forwardRef<
               animate={{ opacity: opacity }}
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
               className={cn(
-                "w-full text-2xl mix-blend-plus-lighter drop-shadow-md inline-block font-medium tracking-tight mt-4",
+                "w-full text-2xl mix-blend-plus-lighter inline-block font-medium tracking-tight mt-4",
               )}
               style={{
                 color: `rgba(255, 255, 255, 0.4)`,
@@ -550,7 +550,7 @@ export const SongLyricLine = forwardRef<
               animate={{ opacity: opacity }}
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
               className={cn(
-                "w-full text-2xl mix-blend-plus-lighter drop-shadow-md inline-block font-medium tracking-tight mt-4",
+                "w-full text-2xl mix-blend-plus-lighter inline-block font-medium tracking-tight mt-4",
               )}
               style={{
                 color: `rgba(255, 255, 255, 0.4)`,
@@ -611,7 +611,7 @@ export const SongLyricLine = forwardRef<
             layout
             initial={false}
             className={cn(
-              "w-full text-3xl text-white mix-blend-plus-lighter drop-shadow-md inline-block tracking-tight",
+              "w-full text-3xl text-white mix-blend-plus-lighter inline-block tracking-tight",
             )}
             animate={{
               filter: `blur(${blur}px)`,
@@ -636,7 +636,7 @@ export const SongLyricLine = forwardRef<
               animate={{ opacity: opacity }}
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
               className={cn(
-                "w-full text-2xl mix-blend-plus-lighter drop-shadow-md inline-block font-medium tracking-tight mt-4",
+                "w-full text-2xl mix-blend-plus-lighter inline-block font-medium tracking-tight mt-4",
               )}
               style={{
                 color: `rgba(255, 255, 255, 0.4)`,
@@ -653,7 +653,7 @@ export const SongLyricLine = forwardRef<
               animate={{ opacity: opacity }}
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
               className={cn(
-                "w-full text-2xl mix-blend-plus-lighter drop-shadow-md inline-block font-medium tracking-tight mt-4",
+                "w-full text-2xl mix-blend-plus-lighter inline-block font-medium tracking-tight mt-4",
               )}
               style={{
                 color: `rgba(255, 255, 255, 0.4)`,
@@ -692,7 +692,7 @@ const VerbatimWord = React.memo(function VerbatimWord({
     mass: 1,
   });
   const gradientPct = useTransform(progress, (p) => `${(1 - p) * 100}%`);
-  const translateY = useTransform(progress, (p) => `${-2 * p}px`);
+  const translateY = useTransform(progress, (p) => `${-4 * p}px`);
   const brightness = useTransform(progress, [0, 0.5, 1], [0.4, 1, 0.8]);
   const backgroundImage = useMotionTemplate`linear-gradient(to left,
     rgba(255,255,255,0) 0%,
@@ -706,15 +706,13 @@ const VerbatimWord = React.memo(function VerbatimWord({
       style={{
         display: "inline-block",
         whiteSpace: "pre",
-        color: "rgba(255,255,255,0.4)",
+        color: "rgba(255,255,255,0.6)",
         backgroundImage: isActive ? backgroundImage : "none",
         WebkitBackgroundClip: "text",
         backgroundClip: "text",
         y: translateY,
-        textShadow: isActive ? "0 0 10px rgba(255, 255, 255, 0.4)" : "none",
         willChange: "transform",
         fontWeight: "500",
-        mixBlendMode: "plus-lighter",
       }}
       transition={{ type: "spring", stiffness: 100, damping: 20 }}
     >

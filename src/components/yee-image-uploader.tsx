@@ -7,7 +7,7 @@ import {
   YeeDialogPrimaryButton,
 } from "./yee-dialog";
 import { getCropppedImg } from "@/lib/utils";
-import { useTheme } from "./providers/theme-provider";
+import { useSettingStore } from "@/lib/store/settingStore";
 export function YeeImageUploader({
   src,
   alt,
@@ -76,7 +76,7 @@ function YeeCropperDialog({
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-  const { theme } = useTheme();
+  const theme = useSettingStore((s) => s.appearance.theme);
 
   const onCropComplete = (_: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);

@@ -15,7 +15,7 @@ import { updatePlaylist, updatePlaylistCover } from "@/lib/services/playlist";
 import { Spinner } from "../ui/spinner";
 import { getUserPlaylists } from "@/lib/services/user";
 import { useUserStore } from "@/lib/store/userStore";
-import { useTheme } from "../providers/theme-provider";
+import { useSettingStore } from "@/lib/store/settingStore";
 
 export function PlaylistEditButton({
   playlist,
@@ -75,7 +75,7 @@ export function PlaylistEditButton({
     }
   }
 
-  const { theme } = useTheme();
+  const theme = useSettingStore((s) => s.appearance.theme);
 
   return (
     <YeeDialog

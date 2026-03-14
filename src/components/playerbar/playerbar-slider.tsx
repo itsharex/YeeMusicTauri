@@ -3,7 +3,7 @@ import { YeeSlider } from "../yee-slider";
 import { formatDuration } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Vibrant } from "node-vibrant/browser";
-import { useTheme } from "../providers/theme-provider";
+import { useSettingStore } from "@/lib/store/settingStore";
 
 export function PlayerBarSlider() {
   const progress = usePlayerStore((s) => s.progress);
@@ -14,7 +14,7 @@ export function PlayerBarSlider() {
   const coverUrl = currentSong?.al?.picUrl;
   const [coverColor, setCoverColor] = useState("");
 
-  const { theme } = useTheme();
+  const theme = useSettingStore((s) => s.appearance.theme);
 
   useEffect(() => {
     if (!coverUrl) return;

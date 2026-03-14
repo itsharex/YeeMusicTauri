@@ -31,7 +31,7 @@ export default function SettingsExpandar({
         className={cn(
           "flex flex-col gap-2 w-full bg-card/60 border rounded-sm p-4 ",
           showDetail && "rounded-b-none",
-          hasDetail && "hover:bg-card/20",
+          hasDetail && "hover:bg-card/40",
           className,
         )}
         onClick={() => setShowDetail((show) => !show)}

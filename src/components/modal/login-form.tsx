@@ -23,7 +23,7 @@ import {
 } from "../yee-dialog";
 import { cn } from "@/lib/utils";
 import { Checkmark24Filled } from "@fluentui/react-icons";
-import { useTheme } from "../providers/theme-provider";
+import { useSettingStore } from "@/lib/store/settingStore";
 
 export function LoginForm({
   open,
@@ -170,7 +170,7 @@ export function LoginForm({
     }, 3000);
   }
 
-  const { theme } = useTheme();
+  const theme = useSettingStore((s) => s.appearance.theme);
 
   return (
     <YeeDialog

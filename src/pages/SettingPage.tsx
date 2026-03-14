@@ -1,8 +1,7 @@
 import {
-  WindowMaterial,
-  useMaterial,
-} from "@/components/providers/material-provider";
-import { Theme, useTheme } from "@/components/providers/theme-provider";
+  useSettingStore,
+  type AppearanceSettings,
+} from "@/lib/store/settingStore";
 import SettingsExpandar, {
   SettingsExpandarDetail,
 } from "@/components/settings/SettingsExpandar";
@@ -21,6 +20,8 @@ import {
   CheckmarkStarburst24Regular,
   Color24Regular,
   Speaker224Regular,
+  TextFont24Regular,
+  Water24Regular,
   Window24Regular,
 } from "@fluentui/react-icons";
 import { IconBrandGithub } from "@tabler/icons-react";
@@ -33,6 +34,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { getVersion } from "@tauri-apps/api/app";
+import { Input } from "@/components/ui/input";
 
 export default function SettingPage() {
   return (
@@ -46,7 +48,11 @@ export default function SettingPage() {
       <div className="w-full h-full flex flex-col gap-4">
         <h2 className="text-sm font-bold">个性化</h2>
 
-        <ThemeSettingCard />
+        <div className="flex flex-col gap-2">
+          <AppearanceSettingCard />
+          <MeshGradientSettingCard />
+          <FontSettingCard />
+        </div>
       </div>
 
       <div className="w-full h-full flex flex-col gap-4">
@@ -114,15 +120,17 @@ function AudioSettingCard() {
   );
 }
 
-function ThemeSettingCard() {
-  const { theme, setTheme } = useTheme();
-  const { material, setMaterial } = useMaterial();
+function AppearanceSettingCard() {
+  const theme = useSettingStore((s) => s.appearance.theme);
+  const setTheme = useSettingStore((s) => s.setTheme);
+  const material = useSettingStore((s) => s.appearance.material);
+  const setMaterial = useSettingStore((s) => s.setMaterial);
 
   const themeStr =
     theme === "system" ? "跟随系统" : theme === "light" ? "浅色" : "深色";
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-2">
       <SettingsExpandar
         title="主题"
         subtitle="选择 Yee Music 的显示主题"
@@ -136,7 +144,9 @@ function ThemeSettingCard() {
             <div className="w-full flex flex-col items-start">
               <RadioGroup
                 defaultValue={theme}
-                onValueChange={(val) => setTheme(val as Theme)}
+                onValueChange={(val) =>
+                  setTheme(val as AppearanceSettings["theme"])
+                }
               >
                 <div className="flex gap-2 items-center">
                   <RadioGroupItem value="light" />
@@ -164,19 +174,21 @@ function ThemeSettingCard() {
           <div className="flex justify-end">
             <Combobox
               value={material}
-              onValueChange={(val) => setMaterial(val as WindowMaterial)}
+              onValueChange={(val) =>
+                setMaterial(val as AppearanceSettings["material"])
+              }
             >
               <ComboboxInput className="w-24 select-none! " />
               <ComboboxContent className="p-2 ring-0">
                 <ComboboxList>
-                  <ComboboxItem key="acrylic" value="Acrylic">
-                    {"Acrylic"}
+                  <ComboboxItem key="acrylic" value="acrylic">
+                    acrylic
                   </ComboboxItem>
-                  <ComboboxItem key="mica" value="Mica">
-                    {"Mica"}
+                  <ComboboxItem key="mica" value="mica">
+                    mica
                   </ComboboxItem>
-                  <ComboboxItem key="none" value="None">
-                    {"None"}
+                  <ComboboxItem key="none" value="none">
+                    none
                   </ComboboxItem>
                 </ComboboxList>
               </ComboboxContent>
@@ -185,6 +197,185 @@ function ThemeSettingCard() {
         }
       ></SettingsExpandar>
     </div>
+  );
+}
+
+function MeshGradientSettingCard() {
+  const updateMeshGradient = useSettingStore((s) => s.updateMeshGradient);
+  const meshGradientProps = useSettingStore((s) => s.appearance.meshGradient);
+
+  const [distortion, setDistortion] = useState(meshGradientProps.distortion);
+  const [swirl, setSwirl] = useState(meshGradientProps.swirl);
+  const [grainMixer, setGrainMixer] = useState(meshGradientProps.grainMixer);
+  const [grainOverlay, setGrainOverlay] = useState(
+    meshGradientProps.grainOverlay,
+  );
+  const [speed, setSpeed] = useState(meshGradientProps.speed);
+
+  useEffect(() => {
+    setDistortion(meshGradientProps.distortion);
+  }, [meshGradientProps.distortion]);
+
+  useEffect(() => {
+    setSwirl(meshGradientProps.swirl);
+  }, [meshGradientProps.swirl]);
+
+  useEffect(() => {
+    setGrainMixer(meshGradientProps.grainMixer);
+  }, [meshGradientProps.grainMixer]);
+
+  useEffect(() => {
+    setGrainOverlay(meshGradientProps.grainOverlay);
+  }, [meshGradientProps.grainOverlay]);
+
+  useEffect(() => {
+    setSpeed(meshGradientProps.speed);
+  }, [meshGradientProps.speed]);
+
+  return (
+    <SettingsExpandar
+      icon={<Water24Regular />}
+      title="流体渐变"
+      subtitle="配置流体渐变效果"
+    >
+      <div className="flex flex-col gap-0">
+        <SettingsExpandarDetail desc="变形强度">
+          <Input
+            type="number"
+            className="w-20 bg-card"
+            value={distortion}
+            min={0}
+            max={1}
+            step={0.01}
+            onChange={(e) => setDistortion(Number(e.target.value))}
+            onBlur={() => {
+              let val = distortion;
+              if (isNaN(val)) val = 0;
+              val = Math.min(Math.max(val, 0), 1);
+              setDistortion(val);
+              updateMeshGradient({ distortion: val });
+            }}
+          />
+        </SettingsExpandarDetail>
+        <SettingsExpandarDetail desc="漩涡强度">
+          <Input
+            type="number"
+            className="w-20 bg-card"
+            value={swirl}
+            min={0}
+            max={1}
+            step={0.01}
+            onChange={(e) => setSwirl(Number(e.target.value))}
+            onBlur={() => {
+              let val = swirl;
+              if (isNaN(val)) val = 0;
+              val = Math.min(Math.max(val, 0), 1);
+              setSwirl(val);
+              updateMeshGradient({ swirl: val });
+            }}
+          />
+        </SettingsExpandarDetail>
+        <SettingsExpandarDetail desc="颗粒混合">
+          <Input
+            type="number"
+            className="w-20 bg-card"
+            value={grainMixer}
+            min={0}
+            max={1}
+            step={0.01}
+            onChange={(e) => setGrainMixer(Number(e.target.value))}
+            onBlur={() => {
+              let val = grainMixer;
+              if (isNaN(val)) val = 0;
+              val = Math.min(Math.max(val, 0), 1);
+              setGrainMixer(val);
+              updateMeshGradient({ grainMixer: val });
+            }}
+          />
+        </SettingsExpandarDetail>
+        <SettingsExpandarDetail desc="颗粒叠加">
+          <Input
+            type="number"
+            className="w-20 bg-card"
+            value={grainOverlay}
+            min={0}
+            max={1}
+            step={0.01}
+            onChange={(e) => setGrainOverlay(Number(e.target.value))}
+            onBlur={() => {
+              let val = grainOverlay;
+              if (isNaN(val)) val = 0;
+              val = Math.min(Math.max(val, 0), 1);
+              setGrainOverlay(val);
+              updateMeshGradient({ grainOverlay: val });
+            }}
+          />
+        </SettingsExpandarDetail>
+        <SettingsExpandarDetail desc="速度">
+          <Input
+            type="number"
+            className="w-20 bg-card"
+            value={speed}
+            min={0}
+            max={1}
+            step={0.01}
+            onChange={(e) => setSpeed(Number(e.target.value))}
+            onBlur={() => {
+              let val = speed;
+              if (isNaN(val)) val = 0;
+              val = Math.min(Math.max(val, 0), 1);
+              setSpeed(val);
+              updateMeshGradient({ speed: val });
+            }}
+          />
+        </SettingsExpandarDetail>
+      </div>
+    </SettingsExpandar>
+  );
+}
+
+function FontSettingCard() {
+  const fontSettings = useSettingStore((s) => s.appearance.font);
+  const updateFont = useSettingStore((s) => s.updateFont);
+
+  const [interfaceFont, setInterfaceFont] = useState(
+    fontSettings.interfaceFontStr,
+  );
+  const [lyricFont, setLyricFont] = useState(fontSettings.lyricFontStr);
+
+  useEffect(() => {
+    setInterfaceFont(fontSettings.interfaceFontStr);
+  }, [fontSettings.interfaceFontStr]);
+
+  useEffect(() => {
+    setLyricFont(fontSettings.lyricFontStr);
+  }, [fontSettings.lyricFontStr]);
+
+  return (
+    <SettingsExpandar
+      icon={<TextFont24Regular />}
+      title="字体"
+      subtitle="配置 Yee Music 的字体"
+    >
+      <SettingsExpandarDetail desc="界面字体">
+        <Input
+          className="w-60 bg-card"
+          value={interfaceFont}
+          placeholder={"例如：'PingFang UI', 'Google Sans'"}
+          onChange={(e) => setInterfaceFont(e.target.value)}
+          onBlur={() => updateFont({ interfaceFontStr: interfaceFont })}
+        />
+      </SettingsExpandarDetail>
+      <SettingsExpandarDetail desc="歌词字体">
+        <Input
+          className="w-60 bg-card"
+          value={lyricFont}
+          placeholder={"例如：'PingFang UI', 'Google Sans'"}
+          onChange={(e) => setLyricFont(e.target.value)}
+          onBlur={() => updateFont({ lyricFontStr: lyricFont })}
+        />
+      </SettingsExpandarDetail>
+    </SettingsExpandar>
   );
 }
 

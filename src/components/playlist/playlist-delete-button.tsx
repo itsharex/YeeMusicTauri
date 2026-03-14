@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useUserStore } from "@/lib/store/userStore";
 import { getUserPlaylists } from "@/lib/services/user";
 import { Spinner } from "../ui/spinner";
-import { useTheme } from "../providers/theme-provider";
+import { useSettingStore } from "@/lib/store/settingStore";
 
 export function PlaylistDeleteButton({ playlist }: { playlist: Playlist }) {
   const [open, setOpen] = useState(false);
@@ -47,7 +47,7 @@ export function PlaylistDeleteButton({ playlist }: { playlist: Playlist }) {
     }
   }
 
-  const { theme } = useTheme();
+  const theme = useSettingStore((s) => s.appearance.theme);
 
   return (
     <YeeDialog

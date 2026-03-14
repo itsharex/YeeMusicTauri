@@ -39,37 +39,38 @@ try {
   updateData.name = latestRelease.tag_name;
 
   // 2. 遍历发布中的资产，匹配并填充更新数据
+  console.log(`Found ${latestRelease.assets.length} assets in release:`);
   for (const asset of latestRelease.assets) {
     const { name, browser_download_url: url } = asset;
+    console.log(`  - ${name}`);
 
-    // 匹配macOS Intel .app.tar.gz 包和签名
-    if (name.endsWith(".app.tar.gz")) {
+    // macOS Intel
+    if (name.endsWith(".app.tar.gz") && !name.includes("aarch64")) {
       updateData.platforms["darwin-x86_64"].url = url;
-    } else if (name.endsWith(".app.tar.gz.sig")) {
-      const signature = await getSignature(url);
-      updateData.platforms["darwin-x86_64"].signature = signature;
+    } else if (name.endsWith(".app.tar.gz.sig") && !name.includes("aarch64")) {
+      updateData.platforms["darwin-x86_64"].signature = await getSignature(url);
     }
-    // 匹配macOS Apple Silicon .app.tar.gz 包和签名 (如果tauri-action生成)
-    // 注意：tauri-action可能会为aarch64生成单独包，也可能生成通用包。根据你的实际输出调整。
+    // macOS Apple Silicon
     else if (name.includes("aarch64") && name.endsWith(".app.tar.gz")) {
       updateData.platforms["darwin-aarch64"].url = url;
     } else if (name.includes("aarch64") && name.endsWith(".app.tar.gz.sig")) {
-      const signature = await getSignature(url);
-      updateData.platforms["darwin-aarch64"].signature = signature;
+      updateData.platforms["darwin-aarch64"].signature = await getSignature(url);
     }
-    // 匹配Linux .AppImage.tar.gz
+    // Linux
     else if (name.endsWith(".AppImage.tar.gz")) {
       updateData.platforms["linux-x86_64"].url = url;
     } else if (name.endsWith(".AppImage.tar.gz.sig")) {
-      const signature = await getSignature(url);
-      updateData.platforms["linux-x86_64"].signature = signature;
+      updateData.platforms["linux-x86_64"].signature = await getSignature(url);
     }
-    // 匹配Windows .msi.zip
-    else if (name.endsWith(".msi.zip")) {
+    // Windows - Tauri v2 使用 NSIS (.nsis.zip)，Tauri v1 使用 MSI (.msi.zip)
+    else if (name.endsWith(".nsis.zip") && !name.endsWith(".nsis.zip.sig")) {
+      updateData.platforms["windows-x86_64"].url = url;
+    } else if (name.endsWith(".nsis.zip.sig")) {
+      updateData.platforms["windows-x86_64"].signature = await getSignature(url);
+    } else if (name.endsWith(".msi.zip") && !name.endsWith(".msi.zip.sig")) {
       updateData.platforms["windows-x86_64"].url = url;
     } else if (name.endsWith(".msi.zip.sig")) {
-      const signature = await getSignature(url);
-      updateData.platforms["windows-x86_64"].signature = signature;
+      updateData.platforms["windows-x86_64"].signature = await getSignature(url);
     }
   }
 

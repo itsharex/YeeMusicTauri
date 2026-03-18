@@ -1,4 +1,4 @@
-import { ChevronRight, ChevronUp, LogIn } from "lucide-react";
+import { ChevronRight, LogIn } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,

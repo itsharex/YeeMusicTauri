@@ -31,8 +31,8 @@ export function LyricSheetBackground() {
       });
 
       const gradientColors = colors
-        .filter((c) => c.lightness > 0.1 && c.lightness < 0.9)
-        .filter((c) => c.saturation > 0.1)
+        .filter((c) => c.lightness > 0.28 && c.lightness < 0.9)
+        .filter((c) => c.saturation > 0.18)
         .sort((a, b) => b.area - a.area)
         .map((c) => c.hex);
 
@@ -46,15 +46,19 @@ export function LyricSheetBackground() {
 
   return (
     <div className="absolute inset-0">
-      <MeshGradient
-        colors={gradientColors}
-        distortion={meshGradientProps.distortion}
-        swirl={meshGradientProps.swirl}
-        grainMixer={meshGradientProps.grainMixer}
-        grainOverlay={meshGradientProps.grainOverlay}
-        speed={isPlaying ? meshGradientProps.speed : 0}
-        className="w-full h-full"
-      />
+      <div className="w-full h-full relative">
+        <MeshGradient
+          colors={gradientColors}
+          distortion={meshGradientProps.distortion}
+          swirl={meshGradientProps.swirl}
+          grainMixer={meshGradientProps.grainMixer}
+          grainOverlay={meshGradientProps.grainOverlay}
+          speed={isPlaying ? meshGradientProps.speed : 0}
+          className="w-full h-full"
+        />
+
+        <div className="absolute top-0 left-0 w-full h-full bg-black/20"></div>
+      </div>
     </div>
   );
 }

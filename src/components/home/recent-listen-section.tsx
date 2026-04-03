@@ -1,4 +1,4 @@
-import { RecentListenResource, Song } from "@/lib/types";
+import { RecentListenResource } from "@/lib/types";
 import ChromaGrid from "@/components/ChromaGrid";
 import { Vibrant } from "node-vibrant/browser";
 import { useEffect, useState } from "react";

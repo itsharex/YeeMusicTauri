@@ -2,7 +2,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import RootLayout from "./layouts/RootLayout";
 import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
-import FavoritePage from "./pages/FavoritePage";
 import AlbumDetailPage from "./pages/detail/AlbumDetailPage";
 import ArtistDetailPage from "./pages/detail/ArtistDetailPage";
 import PlaylistDetailPage from "./pages/detail/PlaylistDetailPage";
@@ -28,10 +27,6 @@ const router = createBrowserRouter([
       {
         path: "search",
         element: <SearchPage />,
-      },
-      {
-        path: "favorite",
-        element: <FavoritePage />,
       },
       {
         path: "detail/album",

@@ -40,7 +40,21 @@ export const useUserStore = create<UserState>()(
         user: null,
         isLoggedin: false,
         setUser: (user) => set({ user, isLoggedin: !!user }),
-        logout: () => set({ user: null, isLoggedin: false }),
+        logout: () =>
+          set({
+            user: null,
+            isLoggedin: false,
+            likeList: [],
+            likeListSet: new Set<number>(),
+            artistList: [],
+            artistListSet: new Set<number>(),
+            playlistList: [],
+            favPlaylist: null,
+            createdPlaylists: [],
+            subscribedPlaylists: [],
+            albumList: [],
+            albumListSet: new Set<number>(),
+          }),
 
         likeList: [],
         likeListSet: new Set<number>(),

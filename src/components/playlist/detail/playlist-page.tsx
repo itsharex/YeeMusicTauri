@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { Playlist } from "@/lib/types";
+import { Playlist, Song } from "@/lib/types";
 import { cn, formateDate } from "@/lib/utils";
 import {
   Heart24Filled,
@@ -21,10 +21,12 @@ import { PlaylistDeleteButton } from "../playlist-delete-button";
 
 export function PlaylistPage({
   playlist,
+  songs,
   isMyPlaylist,
   onRefresh,
 }: {
   playlist: Playlist;
+  songs: Song[];
   isMyPlaylist: boolean;
   onRefresh?: () => void;
 }) {
@@ -150,7 +152,7 @@ export function PlaylistPage({
         </div>
       </div>
 
-      <PlaylistSongs playlistId={playlistId} query={searchQuery} />
+      <PlaylistSongs songs={songs} query={searchQuery} />
     </div>
   );
 }

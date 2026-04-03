@@ -1,7 +1,5 @@
 import { getSongDetail } from "@/lib/services/song";
-import { likeSong } from "@/lib/services/user";
 import { usePlayerStore } from "@/lib/store/playerStore";
-import { useUserStore } from "@/lib/store/userStore";
 import { Resource } from "@/lib/types";
 import { GetThumbnail, cn } from "@/lib/utils";
 import {
@@ -12,9 +10,8 @@ import {
   Play24Filled,
 } from "@fluentui/react-icons";
 import { Link } from "react-router-dom";
-import React from "react";
-import { toast } from "sonner";
 import { useContextMenuStore } from "@/lib/store/contextMenuStore";
+import { useSongLogic } from "@/hooks/use-song-logic";
 
 export function SongPreview({ resources }: { resources: Resource[] }) {
   return (
@@ -27,11 +24,9 @@ export function SongPreview({ resources }: { resources: Resource[] }) {
 }
 
 export function SongPreviewItem({ resource }: { resource: Resource }) {
-  const isLiked = useUserStore((state) =>
-    state.likeListSet.has(Number(resource?.resourceId)),
-  );
+  const { checkIsLiked, handleLike } = useSongLogic();
+  const isLiked = checkIsLiked("resource", resource);
   const LikeIcon = isLiked ? Heart24Filled : Heart24Regular;
-  const toggleLike = useUserStore((state) => state.toggleLikeMusic);
 
   const uiElement = resource?.uiElement;
   const resourceExtInfo = resource?.resourceExtInfo;
@@ -41,27 +36,6 @@ export function SongPreviewItem({ resource }: { resource: Resource }) {
   const cover = uiElement?.image?.imageUrl || "";
 
   const { playSong } = usePlayerStore();
-
-  async function handleLike(e: React.MouseEvent) {
-    e.stopPropagation();
-
-    const targetState = !isLiked;
-
-    toggleLike(Number(resource.resourceId), targetState);
-
-    try {
-      const res = await likeSong(resource.resourceId, targetState);
-
-      if (!res) {
-        toggleLike(Number(resource.resourceId), isLiked);
-        toast.error("操作失败，请重试", { position: "top-center" });
-      }
-    } catch (err) {
-      toggleLike(Number(resource.resourceId), isLiked);
-      toast.error("操作失败，请重试", { position: "top-center" });
-      console.log("切换歌曲喜欢状态失败", err);
-    }
-  }
 
   async function handlePlay() {
     const songId = resource.resourceId;
@@ -120,7 +94,7 @@ export function SongPreviewItem({ resource }: { resource: Resource }) {
       <div className="flex items-center gap-4 opacity-0 group-hover:opacity-100 pr-8 translate-x-20 group-hover:translate-x-0 transform transition-all duration-300 ease-in-out">
         <ArrowDownload24Regular className="size-5 text-foreground cursor-pointer hover:text-foreground/80" />
         <LikeIcon
-          onClick={handleLike}
+          onClick={() => handleLike("resource", resource)}
           className={cn(
             "size-5 text-foreground cursor-pointer hover:text-foreground/80",
             isLiked && "text-red-500 hover:text-red-700",

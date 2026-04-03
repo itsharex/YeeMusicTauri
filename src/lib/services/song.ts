@@ -65,7 +65,7 @@ interface UnblockMusicResponse {
   proxyUrl: string;
 }
 
-export async function getSongDetail(ids: string[]): Promise<Song[]> {
+export async function getSongDetail(ids: string[] | number[]): Promise<Song[]> {
   if (!ids || ids.length === 0) return [];
 
   const idsStr = ids.join(",");
@@ -126,7 +126,7 @@ export async function getSongMusicDetail(
         };
     })
     .filter((item) => item !== undefined)
-    .sort((b, a) => a.size - b.size);
+    .sort((b, a) => a!.size - b!.size);
 
   return musicDetails;
 }

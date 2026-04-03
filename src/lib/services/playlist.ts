@@ -107,3 +107,33 @@ export async function createPlaylist(name: string, isPrivate: boolean) {
 
   return res.code === 200;
 }
+
+export async function addSongToPlaylist(
+  pid: string | number,
+  tracks: string[],
+) {
+  const ids = tracks.join(",");
+  const res = await api.get<{ code: number }>("/playlist/tracks", {
+    op: "add",
+    pid: pid.toString(),
+    tracks: ids,
+    timestamp: Date.now().toString(),
+  });
+
+  return res.code === 200;
+}
+
+export async function removeSongFromPlaylist(
+  pid: string | number,
+  tracks: string[],
+) {
+  const ids = tracks.join(",");
+  const res = await api.get<{ code: number }>("/playlist/tracks", {
+    op: "del",
+    pid: pid.toString(),
+    tracks: ids,
+    timestamp: Date.now().toString(),
+  });
+
+  return res.code === 200;
+}

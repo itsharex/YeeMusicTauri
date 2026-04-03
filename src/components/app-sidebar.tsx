@@ -90,15 +90,6 @@ const libraryItems = [
   },
 ];
 
-const playlistItems = [
-  {
-    title: "我喜欢的音乐",
-    url: "/favorite",
-    icon: Heart24Regular,
-    activeIcon: Heart24Filled,
-  },
-];
-
 export function AppSidebar() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
@@ -134,6 +125,9 @@ export function AppSidebar() {
   };
 
   const navigate = useNavigate();
+
+  const favPlaylist = useUserStore((s) => s.favPlaylist);
+  const favPlaylistUrl = `/detail/playlist?id=${favPlaylist?.id}`;
 
   return (
     <>
@@ -196,20 +190,31 @@ export function AppSidebar() {
           <SidebarGroup>
             <SidebarGroupLabel>播放列表</SidebarGroupLabel>
             <SidebarGroupContent>
-              {playlistItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isItemActive(item)}>
-                    <Link to={item.url}>
-                      {isItemActive(item) ? (
-                        <item.activeIcon className="size-5 text-primary" />
-                      ) : (
-                        <item.icon className="size-5" />
-                      )}
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  className="cursor-pointer"
+                  asChild
+                  isActive={
+                    (favPlaylist && isPlaylistActive(favPlaylist)) || false
+                  }
+                >
+                  <Link to={favPlaylistUrl}>
+                    {/* <img
+                      src={favPlaylist?.coverImgUrl}
+                      alt={`${favPlaylist?.name} 歌单封面`}
+                      className="size-5 rounded-sm"
+                    /> */}
+                    {pathName === "/detail/playlist" ||
+                    (pathName === "/detail/playlist/" &&
+                      currentId === favPlaylist?.id.toString()) ? (
+                      <Heart24Filled className="size-5 text-primary" />
+                    ) : (
+                      <Heart24Regular className="size-5" />
+                    )}
+                    <span>我喜欢的音乐</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
 
               <Collapsible defaultOpen className="group/collapsible py-1">
                 <SidebarMenuItem key={"歌单"}>

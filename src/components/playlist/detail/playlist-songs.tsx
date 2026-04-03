@@ -1,35 +1,15 @@
-import { Loading } from "@/components/loading";
 import { SongList } from "@/components/song/song-list";
-import { getPlaylistAllTrack } from "@/lib/services/playlist";
 import { Song } from "@/lib/types";
 import { CollectionsEmpty24Regular } from "@fluentui/react-icons";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 export function PlaylistSongs({
-  playlistId,
+  songs,
   query,
 }: {
-  playlistId: string | number;
+  songs: Song[];
   query: string;
 }) {
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    async function fetchPlaylistSongs() {
-      setIsLoading(true);
-      try {
-        const res = await getPlaylistAllTrack(playlistId.toString());
-        setSongs(res);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchPlaylistSongs();
-  }, [playlistId]);
-
   const filteredSongs = useMemo(() => {
     if (!query) return songs;
     const q = query.toLowerCase();
@@ -46,9 +26,8 @@ export function PlaylistSongs({
 
   return (
     <div className="w-full h-full">
-      {isLoading && <Loading />}
       {songs && <SongList songList={filteredSongs} showAlbum={true} />}
-      {!isLoading && !songs.length && (
+      {!songs.length && (
         <div className="h-64 text-black/60 flex items-center justify-center gap-4">
           <CollectionsEmpty24Regular /> 暂无歌曲
         </div>

@@ -34,6 +34,7 @@ export function LyricSheetAudioLevelModel({
           {SONG_QUALITY[currentMusicLevel].desc}
         </div>
       }
+      contentClassName="bg-card/60 backdrop-blur-md"
       footer={
         <div className="w-full flex gap-2">
           <YeeDialogPrimaryButton
@@ -59,7 +60,7 @@ export function LyricSheetAudioLevelModel({
           open={isOpen}
           onOpenChange={setIsOpen}
         >
-          <div className="flex justify-between items-center hover:bg-white/10 cursor-pointer p-4 -mx-4 -mt-4 rounded-xl">
+          <div className="flex justify-between items-center hover:bg-foreground/10 cursor-pointer p-4 -mx-4 -mt-4 rounded-xl">
             <span className="text-lg font-semibold">
               {SONG_QUALITY[currentMusicLevel].desc}
             </span>

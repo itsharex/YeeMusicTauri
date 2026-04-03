@@ -13,9 +13,6 @@ import { GetThumbnail, cn } from "@/lib/utils";
 
 import { REPEAT_MODE_CONFIG, SHUFFLE_CONFIG } from "@/lib/constants/player";
 import { Spinner } from "@/components/ui/spinner";
-import { useUserStore } from "@/lib/store/userStore";
-import { toast } from "sonner";
-import { likeSong } from "@/lib/services/user";
 import { PlaylistSheet } from "./playlist-sheet";
 import { MusicLevelPopover } from "../music-level-popover";
 import { LyricSheet } from "../lyric-sheet/lyric-sheet";
@@ -26,6 +23,7 @@ import { YeeButton } from "../yee-button";
 import { PlayerBarVolumePopover } from "./player-bar-volume-popover";
 import { PlayerBarSlider } from "./playerbar-slider";
 import { useContextMenuStore } from "@/lib/store/contextMenuStore";
+import { useSongLogic } from "@/hooks/use-song-logic";
 
 export function PlayerBar() {
   return (
@@ -45,33 +43,11 @@ export function PlayerBar() {
 }
 
 function LeftButtonRegion() {
-  const { likeListSet, toggleLikeMusic: toggleLike } = useUserStore();
+  const { checkIsLiked, handleLike } = useSongLogic();
   const currentSong = usePlayerStore((s) => s.currentSong);
 
-  const isLike = likeListSet.has(Number(currentSong?.id));
+  const isLike = checkIsLiked("song", currentSong);
   const LikeIcon = isLike ? Heart24Filled : Heart24Regular;
-
-  async function handleLike(e: React.MouseEvent) {
-    e.stopPropagation();
-
-    if (!currentSong) return;
-
-    const targetState = !isLike;
-
-    toggleLike(Number(currentSong?.id), targetState);
-
-    try {
-      const res = await likeSong(currentSong?.id, targetState);
-
-      if (!res) {
-        toggleLike(Number(currentSong?.id), isLike);
-        toast.error("操作失败，请稍后重试...", { position: "top-center" });
-      }
-    } catch (error) {
-      toggleLike(Number(currentSong?.id), isLike);
-      toast.error("操作失败，请稍后重试...", { position: "top-center" });
-    }
-  }
 
   return (
     <div className="gap-4 min-w-0 flex items-center pl-4 overflow-hidden">
@@ -113,7 +89,7 @@ function LeftButtonRegion() {
           <div>
             <YeeButton
               variant="ghost"
-              onClick={handleLike}
+              onClick={() => handleLike("song", currentSong)}
               icon={
                 <LikeIcon className={cn("size-4", isLike && "text-red-500")} />
               }

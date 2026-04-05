@@ -375,6 +375,7 @@ export const createPlayerControlSlice: StateCreator<
   },
 
   nextFmSong: () => {
+    set({ isFmMode: true });
     const { fmPlaylist, fmRepeatMode, playSong, fetchFmSongs } = get();
 
     if (fmRepeatMode) {

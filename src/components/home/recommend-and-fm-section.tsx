@@ -188,7 +188,7 @@ function FmCard() {
             <div className="flex flex-col">
               <span className="text-lg font-semibold line-clamp-1 max-w-58">
                 {currentFmSong?.name}
-              </span>{" "}
+              </span>
               <span className="text-md opacity-70 line-clamp-1 max-w-58 font-light tracking-wide">
                 {currentFmSong?.ar?.map((ar) => ar.name).join(" / ")}
               </span>

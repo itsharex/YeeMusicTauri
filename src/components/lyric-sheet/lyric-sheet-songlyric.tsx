@@ -518,7 +518,7 @@ export const SongLyricLine = forwardRef<
         <motion.div
           layout
           ref={ref}
-          className="cursor-pointer hover:bg-white/5 px-4 py-4 rounded-xl inline-block"
+          className="cursor-pointer hover:bg-white/5 px-4 py-4 rounded-xl inline-block transition-colors duration-300"
           onClick={handleClick}
           animate={{ y: targetScrollY, willChange: "transform" }}
           transition={{
@@ -676,7 +676,7 @@ export const SongLyricLine = forwardRef<
         }}
       >
         <motion.div
-          className="cursor-pointer hover:bg-white/5 px-4 py-4 rounded-xl inline-block"
+          className="cursor-pointer hover:bg-white/5 px-4 py-4 rounded-xl inline-block transition-colors duration-300"
           onClick={handleClick}
           style={{ "--current-ms": "0" } as CSSProperties}
         >

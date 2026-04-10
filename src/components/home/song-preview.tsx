@@ -3,7 +3,6 @@ import { usePlayerStore } from "@/lib/store/playerStore";
 import { Resource } from "@/lib/types";
 import { GetThumbnail, cn } from "@/lib/utils";
 import {
-  ArrowDownload24Regular,
   Heart24Filled,
   Heart24Regular,
   MoreHorizontal24Regular,
@@ -92,7 +91,7 @@ export function SongPreviewItem({ resource }: { resource: Resource }) {
       </div>
 
       <div className="flex items-center gap-4 opacity-0 group-hover:opacity-100 pr-8 translate-x-20 group-hover:translate-x-0 transform transition-all duration-300 ease-in-out">
-        <ArrowDownload24Regular className="size-5 text-foreground cursor-pointer hover:text-foreground/80" />
+        {/*<ArrowDownload24Regular className="size-5 text-foreground cursor-pointer hover:text-foreground/80" />*/}
         <LikeIcon
           onClick={() => handleLike("resource", resource)}
           className={cn(

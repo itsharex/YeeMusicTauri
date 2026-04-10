@@ -110,7 +110,7 @@ export function SongActions({ type, data }: ActionProps) {
         ))}
       </ContextMenuButton>
 
-      {!isDownloaded && (
+      {!isDownloaded && type === "song" && (
         <ContextMenuButton
           id="download-music"
           icon={<ArrowDownload24Regular className="size-4" />}
